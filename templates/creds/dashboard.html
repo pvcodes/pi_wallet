@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+{% block title %}{% endblock %}
+{% block head %}
+{{ super() }}
+<style>
+  table,
+  th,
+  td {
+    border: 1px solid black;
+  }
+
+  .addCreds form {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .content form .field {
+    margin-left: 1.5rem;
+    margin-right: 1.5rem;
+
+  }
+
+  .mycreds {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+  }
+
+  .select_ud i {
+    color: white;
+    font-size: 5rem;
+  }
+</style>
+{% endblock head %}
+
+{% block content %}
+
+
+
+<!-- Add Credentials -->
+<div class="card">
+  <div class="card-content">
+    <h1 class="title">Add your Creds!</h1>
+    <div class="content addCreds">
+
+      <form action="{{url_for('add_creds')}}" method="post">
+
+        <div class="field">
+          <label class="label">Site URL</label>
+          <div class="control has-icons-left has-icons-right">
+            <input class="input" type="url" name="cred_url" value="https://" />
+
+            <span class=" icon is-small is-left">
+              <i class="fas fa-sitemap"></i>
+            </span>
+            <span class="icon is-small is-right">
+              <i class="fas fa-check"></i>
+            </span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Username or Email</label>
+          <div class="control has-icons-left has-icons-right">
+            <input class="input " type="text" placeholder="pvcodes" name="cred_uname" />
+            <span class=" icon is-small is-left">
+              <i class="fas fa-user"></i>
+            </span>
+            <span class="icon is-small is-right">
+              <i class="fas fa-check"></i>
+            </span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Password </label>
+          <div class="control has-icons-left has-icons-right">
+            <input class="input" type="password" placeholder="********" name="cred_pswrd" id="pswrd" />
+            <span class="icon is-small is-left">
+              <i class="fas fa-envelope"></i>
+            </span>
+            <span class="icon is-small is-right" id="span-eye">
+              <i class="fas fa-eye" onclick="showPassword()" id="passshowhide"></i>
+            </span>
+          </div>
+        </div>
+
+        <div class="field is-grouped">
+          <div class="control">
+            <button type="submit" class="button is-link">Add Cred :)</button>
+          </div>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-content mycreds">
+
+    {% if obj['cred_data'] %}
+    <table class="table">
+      <caption class="title">Your Creds</caption>
+      <thead>
+        <tr>
+          <th>Site</th>
+          <th>Username/Email</th>
+          <th>Password</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        {%for i in obj['cred_data'] %}
+        <tr>
+          <td><a href="{{i['cred_url']}}">{{i['cred_url']}}</a></td>
+          <td>{{i['cred_uname']}}</td>
+          <td>{{i['cred_pswrd']}}</td>
+          <td>
+            <div>
+              <a onclick="showDeleteCred()"><i class="fas fa-trash"></i></a>
+              <a onclick="showEditCred()"><i class="fas fa-edit"></i></a>
+            </div>
+
+            <div class="modal deleteCred_modal">
+              <div class="modal-background"></div>
+              <div class="modal-content">
+                <div class="card">
+                  <div class="card-content">
+                    <div class="content">Delete Form</div>
+                  </div>
+                  <button class="modal-close is-large" aria-label="close" onclick="closeDeleteCred()">Close</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="modal editCred_modal">
+              <div class="modal-background"></div>
+              <div class="modal-content">
+                <div class="card">
+                  <div class="card-content">
+                    <div class="content">
+
+                      <form action="{{url_for('cred_u')}}" method="post">
+
+                        <input type="hidden" name="{{session['_userID']}}" value="{{i['cred_id']}}">
+
+                        <div class="field">   
+                          <label class="label">New Site URL</label>
+                          <div class="control has-icons-left has-icons-right">
+                            <input class="input" type="url" name="cred_url" value="https://" />
+
+                            <span class=" icon is-small is-left">
+                              <i class="fas fa-sitemap"></i>
+                            </span>
+                            <span class="icon is-small is-right">
+                              <i class="fas fa-check"></i>
+                            </span>
+                          </div>
+                        </div>
+
+                        <div class="field">
+                          <label class="label">New Username or Email</label>
+                          <div class="control has-icons-left has-icons-right">
+                            <input class="input " type="text" placeholder="pvcodes" name="cred_uname" />
+                            <span class=" icon is-small is-left">
+                              <i class="fas fa-user"></i>
+                            </span>
+                            <span class="icon is-small is-right">
+                              <i class="fas fa-check"></i>
+                            </span>
+                          </div>
+                        </div>
+
+                        <div class="field">
+                          <label class="label">New Password</label>
+                          <div class="control has-icons-left has-icons-right">
+                            <input class="input" type="password" placeholder="********" name="cred_pswrd" id="pswrd" />
+                            <span class="icon is-small is-left">
+                              <i class="fas fa-envelope"></i>
+                            </span>
+                            <span class="icon is-small is-right" id="span-eye">
+                              <i class="fas fa-eye" onclick="showPassword()" id="passshowhide"></i>
+                            </span>
+                          </div>
+                        </div>
+
+                        <div class="field is-grouped">
+                          <div class="control">
+                            <button type="submit" class="button is-link is-light">Update </button>
+                          </div>
+                        </div>
+
+                      </form>
+                    </div>
+                  </div>
+                  <button class="modal-close is-large" aria-label="close" onclick="closeEditCred()">Close</button>
+                </div>
+              </div>
+            </div>
+
+          </td>
+        </tr>
+        {%endfor%}
+
+        {% else %}
+        <h1 class="title">No creds yet, add some</h1>
+
+        {%endif%}
+      </tbody>
+    </table>
+
+  </div>
+</div>
+
+
+<script>
+
+  deleteCred_modal = document.getElementsByClassName('deleteCred_modal')[0]
+
+  editCred_modal = document.getElementsByClassName('editCred_modal')[0]
+
+  function showDeleteCred() {
+    deleteCred_modal.classList.add('is-active')
+  }
+  function closeDeleteCred() {
+    deleteCred_modal.classList.remove('is-active')
+
+  }
+
+  function showEditCred() {
+    editCred_modal.classList.add('is-active')
+  }
+
+  function closeEditCred() {
+    editCred_modal.classList.remove('is-active')
+  }
+
+</script>
+
+{% endblock content %}
