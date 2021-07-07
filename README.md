@@ -46,7 +46,7 @@ Before contributing, here is some information that might help your **PR (Pull Re
 1. Add a upstream link to main branch in your cloned repo
 
 ```
-git remote add upstream https://github.com/pvcodes/pi_connect.git
+git remote add upstream https://github.com/pvcodes/pi_wallet.git
 ```
 
 2. Keep your cloned repo upto date by pulling from upstream (this will also avoid any merge conflicts while committing new changes)
