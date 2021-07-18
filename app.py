@@ -13,8 +13,9 @@ FERNET = Fernet(FERNET_KEY)
 
 
 # UserRoutes
-from user import routes
-from creds import routes
+import user.routes 
+import creds.routes
+
 
 
 @app.route('/')
