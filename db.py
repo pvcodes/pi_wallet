@@ -6,10 +6,12 @@ from pymongo import MongoClient
 BASEPATH = os.getcwd()
 load_dotenv()
 
-DB_CLUSTER = os.getenv(f'DB_CLUSTER')
-DB_NAME = os.getenv(f'DB_NAME')
-DB_UNAME = os.getenv(f'DB_UNAME')
-DB_PSWRD = os.getenv(f'DB_PSWRD')
+# DB_CLUSTER = os.getenv(f'DB_CLUSTER')
+DB_CLUSTER = os.environ['DB_CLUSTER']
+DB_NAME = os. environ['DB_NAME']
+DB_UNAME = os.environ['DB_UNAME']
+DB_PSWRD = os.environ['DB_PSWRD']
+
 db_connstr = f'mongodb+srv://{DB_UNAME}:{DB_PSWRD}@{DB_CLUSTER}.uknti.mongodb.net/{DB_NAME}?retryWrites=true&w=majority'
 
 try:

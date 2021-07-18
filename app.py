@@ -2,7 +2,8 @@ from cryptography.fernet import Fernet
 from flask import Flask, render_template, session, redirect, url_for
 
 
-from db import db
+# from db import db
+import db
 
 
 app = Flask(__name__)
