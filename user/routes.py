@@ -11,15 +11,18 @@ from .models import Register, Login
 @app.route('/login', methods=['GET', 'POST'])
 def user_login():
 
+    # just to get the title of the page
     template_obj = {'title': 'Login'}
 
     print(session)
+    
     try:
         if session['_userID']:
             return redirect(url_for('dashboard'))
     except Exception as e:
         print(e)
 
+    # for security purpose, if someone is trying to access using POSTMAN, etc
     if flask.request.method == 'GET':
         return render_template('user/login.html', obj=template_obj)
 
@@ -41,6 +44,7 @@ def user_login():
 
         else:  # Everything is fine, redirect to dashboard with session
             session['_userID'] = _userID  # it will be _id
+
             print(session)
             return redirect(url_for('dashboard'))
 
@@ -58,7 +62,7 @@ def logout():
     return redirect(url_for('root'))
 
 
-@ app.route('/register', methods=['GET', 'POST'])
+@app.route('/register', methods=['GET', 'POST'])
 def user_register():
 
     template_obj = {'title': 'Register'}

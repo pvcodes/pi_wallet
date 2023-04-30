@@ -5,4 +5,11 @@ function showPassword() {
   } else {
     x.type = "password";
   }
+
 }
+var $navham = $('#nav-ham')
+var $navmenu = $('#nav-menu')
+
+$navham.click(()=>{
+  $navmenu.toggleClass("navbarhide")
+})

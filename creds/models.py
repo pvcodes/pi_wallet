@@ -41,14 +41,14 @@ def AddCred(cred_url, cred_uname, cred_psword):
     #     '_id': 'realusername',
     #     'creds': [
     #         {
-    #             'cred_url': 'www.google.com',
+    #             'cred_url': 'www.abc.com',
     #             'cred_uname': 'pvcodes',
-    #             'cred_password': 'HOJFPkjBfIOyug@'
+    #             'cred_password': 'xxxxxxxxxxxxx'
     #         },
     #         {
     #             'cred_url': 'www.google.com',
     #             'cred_uname': 'pvcodes',
-    #             'cred_password': 'HOJFPkjBfIOyug@'
+    #             'cred_password': 'xxxxxxxxxxxxx'
     #         }
     #     ]
     # }

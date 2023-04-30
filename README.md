@@ -1,8 +1,6 @@
 <h1 align='center'>Pi Wallet</h1>
 <p>
 Safely store your password with 2 layer encryption. 
-
-Soon, will be deployed.. 
 </p>
 
 ## Screenshot
@@ -86,7 +84,7 @@ Submit an issue on GitHub and add as much information as you can about the bug, 
 - A bunch of flask modules
 
 <div align="center">
-<a href="docs/LICENSE.md"><img src="https://img.shields.io/github/license/pvcodes/pi_chatter/?style=flat-square" alt="MIT license"></a>
+<a href="LICENSE.md"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT license"></a>
 </div>
 
 

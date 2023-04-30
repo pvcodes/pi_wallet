@@ -30,6 +30,66 @@
     color: white;
     font-size: 5rem;
   }
+
+  @media screen and (max-width: 600px) {
+    .addCreds form {
+      flex-direction: column;
+    }
+
+    table {
+      border: 0;
+      width: 90%;
+    }
+
+    table caption {
+      font-size: 1.3em;
+    }
+
+    table thead {
+      border: none;
+      clip: rect(0 0 0 0);
+      height: 1px;
+      margin: -1px;
+      overflow: hidden;
+      padding: 0;
+      position: absolute;
+      width: 1px;
+    }
+
+    table tr {
+      border-bottom: 3px solid #ddd;
+      display: block;
+      margin-bottom: .625em;
+    }
+
+    table td {
+      border-bottom: 1px solid #ddd;
+      display: block;
+      font-size: .8em;
+      text-align: right;
+      display: flex;
+      justify-content: space-between;
+      /* width: 25rem; */
+    }
+
+    table td::before {
+      /*
+    * aria-label has no advantage, it won't be read inside a table
+    content: attr(aria-label);
+    */
+      content: attr(data-label);
+      float: left;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    table td:last-child {
+      border-bottom: 0;
+    }
+
+
+
+  }
 </style>
 {% endblock head %}
 
@@ -37,9 +97,10 @@
 
 
 
-<!-- Add Credentials -->
 <div class="card">
-  <div class="card-content">
+
+  <!-- Add Credentials -->
+  <div class="card-content ">
     <h1 class="title">Add your Creds!</h1>
     <div class="content addCreds">
 
@@ -97,6 +158,7 @@
   </div>
 </div>
 
+<!-- Display Existing Credentials -->
 <div class="card">
   <div class="card-content mycreds">
 
@@ -105,9 +167,9 @@
       <caption class="title">Your Creds</caption>
       <thead>
         <tr>
-          <th>Site</th>
-          <th>Username/Email</th>
-          <th>Password</th>
+          <th scope="col">Site</th>
+          <th scope="col">Username/Email</th>
+          <th scope="col">Password</th>
         </tr>
       </thead>
 
@@ -115,9 +177,9 @@
 
         {%for i in obj['cred_data'] %}
         <tr>
-          <td><a href="{{i['cred_url']}}">{{i['cred_url']}}</a></td>
-          <td>{{i['cred_uname']}}</td>
-          <td>{{i['cred_pswrd']}}</td>
+          <td scope="row" data-label="Site"><a href="{{i['cred_url']}}">{{i['cred_url']}}</a></td>
+          <td data-label="Username/Email">{{i['cred_uname']}}</td>
+          <td data-label="Password">{{i['cred_pswrd']}}</td>
           <td>
             <div>
               <a onclick="showDeleteCred()"><i class="fas fa-trash"></i></a>
@@ -147,7 +209,7 @@
 
                         <input type="hidden" name="{{session['_userID']}}" value="{{i['cred_id']}}">
 
-                        <div class="field">   
+                        <div class="field">
                           <label class="label">New Site URL</label>
                           <div class="control has-icons-left has-icons-right">
                             <input class="input" type="url" name="cred_url" value="https://" />
