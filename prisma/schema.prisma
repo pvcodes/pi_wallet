@@ -1,0 +1,66 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               Int           @id @default(autoincrement())
+  username         String        @unique
+  email            String        @unique
+  password         String
+  name             String?
+  master_key       String?
+  credentials      Credential[]
+  receivedMappings UserMapping[] @relation("RecipientUserMapping")
+  sentMappings     UserMapping[] @relation("ConferrerUserMapping")
+
+  @@index([username])
+  @@index([email])
+}
+
+model Credential {
+  id                Int                 @id @default(autoincrement())
+  key               String
+  value             String
+  user_id           Int
+  last_updated      DateTime            @updatedAt
+  user              User                @relation(fields: [user_id], references: [id])
+  CredentialMapping CredentialMapping[]
+
+  @@index([user_id])
+}
+
+model UserMapping {
+  id                Int                 @id @default(autoincrement())
+  conferrer_id      Int // master 
+  recipient_id      Int // slave
+  conferrer         User                @relation("ConferrerUserMapping", fields: [conferrer_id], references: [id])
+  recipient         User                @relation("RecipientUserMapping", fields: [recipient_id], references: [id])
+  CredentialMapping CredentialMapping[]
+
+  @@unique([conferrer_id, recipient_id])
+  @@index([conferrer_id])
+  @@index([recipient_id])
+}
+
+model CredentialMapping {
+  id              Int         @id @default(autoincrement())
+  credential_id   Int
+  user_mapping_id Int
+  credential      Credential  @relation(fields: [credential_id], references: [id])
+  userMapping     UserMapping @relation(fields: [user_mapping_id], references: [id])
+
+  @@unique([credential_id, user_mapping_id])
+  @@index([credential_id])
+  @@index([user_mapping_id])
+}
