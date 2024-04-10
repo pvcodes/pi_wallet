@@ -19,7 +19,8 @@
 		],
 		"paths": {
 			"@/*": ["./src/*"]
-		}
+		},
+		"typeRoots": ["./src/lib/types"]
 	},
 	"include": [
 		"next-env.d.ts",

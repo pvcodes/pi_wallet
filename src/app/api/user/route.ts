@@ -1,94 +1,70 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbClient from "@/db";
-import { ResponseObject, generateIdentifier } from "@/utils/helper";
+import { handleSession, ResponseObject } from "@/utils/helper";
 import { SignupSchema } from "@/utils/validations/user";
+import type { User } from "@/lib/types/user";
+import { getServerSession } from "next-auth";
+import { options } from "../auth/[...nextauth]/options";
 
-interface User {
-	username: string;
-	email: string;
-	password: string;
-	name?: string;
-}
-
-// create user
-// export async function POST(req: NextRequest, next: NextResponse) {
-// 	try {
-// 		const payload: User = await req.json();
-
-// 		// zod/joi validation
-
-// 		try {
-// 			SignupSchema.parse(payload);
-// 		} catch {
-// 			return ResponseObject(false, "Data not valid");
-// 		}
-
-// 		// rest of the logic
-
-// 		// hash password
-// 		return ResponseObject(true, payload);
-// 		const user = await dbClient.user.create({
-// 			data: {
-// 				...payload,
-// 				id: await generateIdentifier("usr"),
-// 			},
-// 		});
-
-// 		// JWT token, create
-
-// 		// set cookie for auth
-
-// 		// redirect to dashboard
-// 		return NextResponse.json({ success: true, data: user });
-// 	} catch (err) {
-// 		return NextResponse.json({
-// 			success: false,
-// 			error: (err as Error)?.message,
-// 		});
-// 	}
-// }
-export async function POST(req: NextRequest, next: NextResponse) {
+export async function GET(req: NextRequest) {
 	try {
-		const payload: User = await req.json();
-		await SignupSchema.parseAsync(payload);
-
-		// save to db
-		const user = await dbClient.user.create({
-			data: { id: await generateIdentifier("usr"), ...payload },
+		const session = await handleSession(req);
+		const user = await dbClient.user.findUnique({
+			where: {
+				id: session?.user?.id,
+			},
 		});
-
 		return ResponseObject(true, user);
-	} catch (err) {
-		console.log((err as Error).name);
-
+	} catch (error) {
 		return ResponseObject(
 			false,
-			err instanceof Error ? err.message : "Internal server error"
+			error instanceof Error ? error.message : "Internal server error"
 		);
 	}
 }
 
-// LOGIN USER
-export async function GET(req: NextRequest) {
-	return NextResponse.json({
-		as: "asda",
-		asd: req.nextUrl.pathname,
-		data: await dbClient.user.findMany(),
-	});
-
-	const payload: User = await req.json();
-
+export async function POST(req: NextRequest) {
 	try {
-		await dbClient.user.create({
-			data: {
-				...payload,
-				id: await generateIdentifier("usr"),
-			},
+		const session = await handleSession(req);
+		const payload: User = await req.json();
+		console.log(22, payload);
+		await SignupSchema.parseAsync(payload);
+
+		const user = await dbClient.user.create({
+			data: payload,
 		});
-	} catch (err) {
-		return Response.json({
-			success: false,
-			error: (err as Error)?.message,
+
+		return ResponseObject(true, user);
+	} catch (error) {
+		console.log((error as Error).name);
+
+		return ResponseObject(
+			false,
+			error instanceof Error ? error.message : "Internal server error"
+		);
+	}
+}
+
+export async function DELETE(req: NextRequest, next: NextResponse) {
+	try {
+		const session = await getServerSession(options);
+		if (!session) return ResponseObject(false, "Unauthorized Access");
+
+		const payload: User = await req.json();
+		await SignupSchema.parseAsync(payload);
+
+		// save to db
+		const user = await dbClient.user.delete({
+			where: { id: 1 },
 		});
+
+		return ResponseObject(true, user);
+	} catch (error) {
+		console.log((error as Error).name);
+
+		return ResponseObject(
+			false,
+			error instanceof Error ? error.message : "Internal server error"
+		);
 	}
 }

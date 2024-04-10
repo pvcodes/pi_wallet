@@ -1,4 +1,6 @@
-import { NextResponse } from "next/server";
+import { options } from "@/app/api/auth/[...nextauth]/options";
+import { getServerSession } from "next-auth";
+import { NextRequest, NextResponse } from "next/server";
 import { v4 as uuid4 } from "uuid";
 
 export const generateIdentifier = async (prefix = "") => {
@@ -28,6 +30,23 @@ export const ResponseObject = async (
 ) => {
 	return NextResponse.json(
 		{ success, [success ? "data" : "error"]: parseErrorMessage(data) },
-		{ status: statusCode || (!success ? 500 : 200) }
+		{ status: statusCode || (!success ? 400 : 200) }
 	);
+};
+
+export const generatePassword = async () => {
+	var length = 8,
+		charset =
+			"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
+		retVal = "";
+	for (var i = 0, n = charset.length; i < length; ++i) {
+		retVal += charset.charAt(Math.floor(Math.random() * n));
+	}
+	return retVal;
+};
+
+export const handleSession = async (req: NextRequest) => {
+	const session = await getServerSession(options);
+	if (!session?.user?.id) return null;
+	return session;
 };
