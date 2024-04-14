@@ -1,23 +1,20 @@
-import { ISODateString } from "next-auth";
-
-// export interface Session {
-// 	user?: {
-// 		id: number | null;
-// 		name?: string | null;
-// 		email?: string | null;
-// 		image?: string | null;
-// 	};
-// 	expires: ISODateString;
-// }
-
-export interface User {
+export type User = {
+	id: number;
 	username: string;
 	email: string;
 	password: string;
 	name?: string;
-}
+};
 
-export interface Credential {
-	key: string;
-	value: string;
-}
+export type UserCreateInput = {
+	username: string;
+	email: string;
+	password: string;
+};
+
+export type UserUpdateInput = {
+	username: string;
+	email: string;
+	password: string;
+	master_key: string;
+};

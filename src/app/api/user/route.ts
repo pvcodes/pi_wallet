@@ -1,70 +1,72 @@
-import { NextRequest, NextResponse } from "next/server";
-import dbClient from "@/db";
-import { handleSession, ResponseObject } from "@/utils/helper";
-import { SignupSchema } from "@/utils/validations/user";
+import type { Session } from "next-auth";
 import type { User } from "@/lib/types/user";
-import { getServerSession } from "next-auth";
-import { options } from "../auth/[...nextauth]/options";
+
+import { NextRequest, NextResponse } from "next/server";
+import userService from "@/db/services/user";
+import { handleSession, ResponseObject } from "@/utils/helper";
+import { userSignupSchema, userUpdateSchema } from "@/utils/validations/user";
 
 export async function GET(req: NextRequest) {
 	try {
-		const session = await handleSession(req);
-		const user = await dbClient.user.findUnique({
-			where: {
-				id: session?.user?.id,
-			},
+		const session = (await handleSession(req)) as Session;
+
+		const user = await userService.getUser(session.user.id);
+		return ResponseObject(true, {
+			mesasage: "user found successfully",
+			user,
 		});
-		return ResponseObject(true, user);
 	} catch (error) {
-		return ResponseObject(
-			false,
-			error instanceof Error ? error.message : "Internal server error"
-		);
+		console.log(error);
+		return ResponseObject(false, error as Error);
 	}
 }
 
 export async function POST(req: NextRequest) {
 	try {
-		const session = await handleSession(req);
-		const payload: User = await req.json();
-		console.log(22, payload);
-		await SignupSchema.parseAsync(payload);
+		await handleSession(req);
 
-		const user = await dbClient.user.create({
-			data: payload,
+		const payload: User = await req?.json();
+		await userSignupSchema.parseAsync(payload);
+		const user = userService.createUser(payload);
+		return ResponseObject(true, {
+			message: "user created successfully",
+			user,
 		});
-
-		return ResponseObject(true, user);
 	} catch (error) {
-		console.log((error as Error).name);
+		console.log(error);
+		return ResponseObject(false, error as Error);
+	}
+}
 
-		return ResponseObject(
-			false,
-			error instanceof Error ? error.message : "Internal server error"
-		);
+export async function PUT(req: NextRequest) {
+	try {
+		const session = (await handleSession(req)) as Session;
+
+		const payload: User = await req?.json();
+		await userUpdateSchema.parseAsync(payload);
+		const user = await userService.updateUser(session.user.id, payload);
+
+		return ResponseObject(true, {
+			message: "user updated successfully",
+			user,
+		});
+	} catch (error) {
+		console.log(error);
+		return ResponseObject(false, error as Error);
 	}
 }
 
 export async function DELETE(req: NextRequest, next: NextResponse) {
 	try {
-		const session = await getServerSession(options);
-		if (!session) return ResponseObject(false, "Unauthorized Access");
-
-		const payload: User = await req.json();
-		await SignupSchema.parseAsync(payload);
-
-		// save to db
-		const user = await dbClient.user.delete({
-			where: { id: 1 },
+		const session = (await handleSession(req)) as Session;
+		console.log(21, session.user);
+		const user = await userService.deleteUser(session.user.id);
+		return ResponseObject(true, {
+			message: "user deleted successfully",
+			user,
 		});
-
-		return ResponseObject(true, user);
 	} catch (error) {
-		console.log((error as Error).name);
-
-		return ResponseObject(
-			false,
-			error instanceof Error ? error.message : "Internal server error"
-		);
+		console.log(error);
+		return ResponseObject(false, error as Error);
 	}
 }

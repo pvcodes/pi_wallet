@@ -22,7 +22,7 @@ const Signup = () => {
 		confirmPswrd: "",
 	});
 
-	const handleOnSubmit = async (e) => {
+	const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		try {
 			e.preventDefault();
 			const dataToSend = formData;

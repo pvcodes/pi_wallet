@@ -1,50 +1,61 @@
+import type { Credential, CredentialCreateInput } from "@/lib/types/creds";
 import dbClient from "../index";
 
-const createCred = async (payload) => {
-	try {
-		return await dbClient.credential.create(payload);
-	} catch (error) {
-		console.log((error as Error)?.message);
+const getCreds = async (where: Partial<Credential>, fields?: string[]) => {
+	let select: Record<string, boolean> | undefined;
+	if (fields) {
+		select = {};
+		fields.forEach((field) => {
+			select![field] = true;
+		});
 	}
-};
-
-const getCred = async (credId: number) => {
 	try {
-		return await dbClient.credential.findUnique({
-			where: {
-				id: credId,
-			},
+		return await dbClient.credential.findMany({
+			where,
+			select,
 		});
 	} catch (error) {
-		console.log((error as Error)?.message);
+		throw new Error(`Failed to get cred: ${(error as Error).message}`);
 	}
 };
 
-const updateCred = async (credId: string, dataToUpdate) => {
+const createCred = async (payload: CredentialCreateInput) => {
+	try {
+		return await dbClient.credential.create({ data: payload });
+	} catch (error) {
+		throw new Error(`Failed to get user: ${(error as Error).message}`);
+	}
+};
+
+const updateCred = async (id: number, data: Partial<Credential>) => {
+	// only return values, which are updated including respective id
+	const select: Record<string, boolean> | undefined = { id: true };
+	Object.keys(data).forEach((key) => {
+		if ((data as Record<string, number | string | Date | undefined>)[key])
+			select[key] = true;
+	});
+
 	try {
 		return await dbClient.credential.update({
-			where: {
-				id: credId,
-			},
-			data: dataToUpdate,
+			where: { id },
+			data,
+			select,
 		});
 	} catch (error) {
-		console.log((error as Error)?.message);
+		throw new Error(`Failed to update cred: ${(error as Error).message}`);
 	}
 };
 
-const deletCred = async (credId: string) => {
+const deleteCred = async (id: number) => {
 	try {
 		return await dbClient.credential.delete({
-			where: {
-				id: credId,
-			},
+			where: { id },
 		});
 	} catch (error) {
-		console.log((error as Error)?.message);
+		throw new Error(`Failed to delete cred: ${(error as Error).message}`);
 	}
 };
 
-export const getAllCreds = async (user_id: number) => {
-	return await dbClient.credential.findMany({ where: { user_id } });
-};
+const credService = { createCred, getCreds, deleteCred, updateCred };
+
+export default credService;

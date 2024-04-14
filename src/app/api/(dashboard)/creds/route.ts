@@ -1,90 +1,73 @@
-import { ResponseObject } from "@/utils/helper";
-import { NextRequest, NextResponse } from "next/server";
-import dbClient from "@/db/index";
-import { UpdateCredSchema } from "@/utils/validations/creds";
-import { handleSession } from "@/utils/helper";
-import type { User } from "@/lib/types/user";
 import type { Session } from "next-auth";
+
+import { NextRequest } from "next/server";
+import { ResponseObject, handleSession } from "@/utils/helper";
+import { UpdateCredSchema } from "@/utils/validations/creds";
+import credService from "@/db/services/creds";
 
 export async function GET(req: NextRequest) {
 	try {
-		const session = await handleSession(req);
-		// const session = await getSession();
-		const creds = await dbClient.credential.findMany({
-			where: {
-				user_id: session?.user?.id,
-			},
+		const session = (await handleSession(req)) as Session;
+
+		const cred = await credService.getCreds({
+			user_id: session.user.id,
 		});
-		return ResponseObject(true, creds, 200);
+		return ResponseObject(true, cred, 200);
 	} catch (error) {
-		return ResponseObject(
-			false,
-			error instanceof Error ? error.message : "Internal server error"
-		);
+		console.log(error);
+		return ResponseObject(false, error as Error);
 	}
 }
 
 export async function POST(req: NextRequest) {
 	try {
-		const session = await handleSession(req);
-		const { key, value } = await req?.json();
-		console.log(23, { key, value });
+		const session = (await handleSession(req)) as Session;
 		if (!session?.user?.id) {
-			return ResponseObject(false, "user_id not found in sessions");
+			return ResponseObject(false, "unauthorized access");
 		}
 
-		const cred = await dbClient.credential.create({
-			data: {
-				key,
-				value,
-				user_id: session?.user?.id,
-			},
+		const { key, value } = await req?.json();
+		const cred = await credService.createCred({
+			key,
+			value,
+			user_id: session?.user?.id,
 		});
 		return ResponseObject(true, cred);
 	} catch (error) {
+		console.log(error);
 		return ResponseObject(false, error as Error);
 	}
 }
 
 export async function PUT(req: NextRequest) {
 	try {
-		const session = await handleSession(req);
+		const session = (await handleSession(req)) as Session;
+
 		const payload = (await req?.json()) || {};
-		const validatedPayload = await UpdateCredSchema.parseAsync(payload);
-		const updatedCred = await dbClient.credential.update({
-			where: {
-				id: validatedPayload?.id,
-			},
-			data: {
-				key: validatedPayload?.key,
-				value: validatedPayload?.value,
-			},
+		const { key, value, id } = await UpdateCredSchema.parseAsync(payload);
+
+		const cred = await credService.updateCred(id, {
+			key,
+			value,
 		});
-		return ResponseObject(true, updatedCred);
+		return ResponseObject(true, cred);
 	} catch (error) {
-		return ResponseObject(
-			false,
-			error instanceof Error ? error.message : "Something went wrong"
-		);
+		console.log(error);
+		return ResponseObject(false, error as Error);
 	}
 }
 
 export async function DELETE(req: NextRequest) {
 	try {
 		const session = await handleSession(req);
-		const id = req.nextUrl?.searchParams?.get("id");
+
+		let id = parseInt(req.nextUrl?.searchParams?.get("id") ?? "", 10);
 		if (id) {
-			const deletedCred = await dbClient.credential.delete({
-				where: {
-					id: parseInt(id, 10),
-				},
-			});
-			return ResponseObject(true, deletedCred);
+			const cred = await credService.deleteCred(id);
+			return ResponseObject(true, cred);
 		}
 	} catch (error) {
-		return ResponseObject(
-			false,
-			error instanceof Error ? error.message : "Something went wrong"
-		);
+		console.log(error);
+		return ResponseObject(false, error as Error);
 	}
 }

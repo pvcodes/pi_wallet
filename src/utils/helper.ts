@@ -47,6 +47,7 @@ export const generatePassword = async () => {
 
 export const handleSession = async (req: NextRequest) => {
 	const session = await getServerSession(options);
-	if (!session?.user?.id) return null;
+	if (!session?.user?.id) return ResponseObject(false, "unauthorized access");
+
 	return session;
 };
