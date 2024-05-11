@@ -5,8 +5,8 @@ export interface Credential {
 	user_id: number;
 	last_updated: Date;
 }
-export type CredentialCreateInput = {
+export interface CredentialCreateInput {
 	key: string;
 	value: string;
 	user_id: number;
-};
+}

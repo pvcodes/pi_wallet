@@ -19,14 +19,11 @@ export const userUpdateSchema = z
 		name: z.string().min(1).optional(),
 	})
 	.refine(
-		(data) => {
-			return (
-				data.username !== undefined ||
-				data.email !== undefined ||
-				data.password !== undefined ||
-				data.name !== undefined
-			);
-		},
+		(data) =>
+			data.username !== undefined ||
+			data.email !== undefined ||
+			data.password !== undefined ||
+			data.name !== undefined,
 		{
 			message: "At least one field must be provided for update",
 		}

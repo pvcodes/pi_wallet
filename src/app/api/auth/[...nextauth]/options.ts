@@ -1,10 +1,16 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GithubProvider from "next-auth/providers/github";
+import GoogleProvider from "next-auth/providers/google";
 import dbclient from "@/db/index";
 import { generatePassword } from "@/utils/helper";
+
 export const options: NextAuthOptions = {
 	providers: [
+		GoogleProvider({
+			clientId: process.env.GOOGLE_CLIENT_ID as string,
+			clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+		}),
 		GithubProvider({
 			clientId: process.env.GITHUB_CLIENT_ID as string,
 			clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
@@ -24,7 +30,7 @@ export const options: NextAuthOptions = {
 				},
 			},
 			async authorize(credentials) {
-				console.log(123, {credentials});
+				console.log(123, { credentials });
 				try {
 					const user = await dbclient.user.findUnique({
 						where: { username: credentials?.username },
@@ -101,7 +107,7 @@ export const options: NextAuthOptions = {
 		},
 	},
 
-	pages: {
-		signIn: "/signin",
-	},
+	// pages: {
+	// 	signIn: "/signin",
+	// },
 };

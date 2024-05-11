@@ -1,5 +1,5 @@
-import type { Credential, CredentialCreateInput } from "@/lib/types/creds";
 import dbClient from "../index";
+import type { Credential, CredentialCreateInput } from "@/lib/types/creds";
 
 const getCreds = async (where: Partial<Credential>, fields?: string[]) => {
 	let select: Record<string, boolean> | undefined;
@@ -56,6 +56,11 @@ const deleteCred = async (id: number) => {
 	}
 };
 
-const credService = { createCred, getCreds, deleteCred, updateCred };
+const credService = {
+	createCred,
+	getCreds,
+	deleteCred,
+	updateCred,
+};
 
 export default credService;

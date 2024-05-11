@@ -1,9 +1,9 @@
+import { NextRequest } from "next/server";
 import type { Session } from "next-auth";
 
-import { NextRequest } from "next/server";
-import { ResponseObject, handleSession } from "@/utils/helper";
-import { UpdateCredSchema } from "@/utils/validations/creds";
 import credService from "@/db/services/creds";
+import { handleSession, ResponseObject } from "@/utils/helper";
+import { UpdateCredSchema } from "@/utils/validations/creds";
 
 export async function GET(req: NextRequest) {
 	try {
@@ -61,7 +61,7 @@ export async function DELETE(req: NextRequest) {
 	try {
 		const session = await handleSession(req);
 
-		let id = parseInt(req.nextUrl?.searchParams?.get("id") ?? "", 10);
+		const id = parseInt(req.nextUrl?.searchParams?.get("id") ?? "", 10);
 		if (id) {
 			const cred = await credService.deleteCred(id);
 			return ResponseObject(true, cred);

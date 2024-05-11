@@ -1,8 +1,8 @@
+import { NextRequest, NextResponse } from "next/server";
 import type { Session } from "next-auth";
+import userService from "@/db/services/user";
 import type { User } from "@/lib/types/user";
 
-import { NextRequest, NextResponse } from "next/server";
-import userService from "@/db/services/user";
 import { handleSession, ResponseObject } from "@/utils/helper";
 import { userSignupSchema, userUpdateSchema } from "@/utils/validations/user";
 
@@ -27,6 +27,7 @@ export async function POST(req: NextRequest) {
 
 		const payload: User = await req?.json();
 		await userSignupSchema.parseAsync(payload);
+		console.log(payload);
 		const user = userService.createUser(payload);
 		return ResponseObject(true, {
 			message: "user created successfully",

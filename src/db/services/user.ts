@@ -1,5 +1,5 @@
-import type { UserCreateInput, UserUpdateInput } from "@/lib/types/user";
 import dbClient from "../index";
+import type { UserCreateInput, UserUpdateInput } from "@/lib/types/user";
 
 const getUser = async (id: number) => {
 	try {
@@ -49,6 +49,11 @@ const deleteUser = async (id: number) => {
 	}
 };
 
-const userService = { getUser, createUser, updateUser, deleteUser };
+const userService = {
+	getUser,
+	createUser,
+	updateUser,
+	deleteUser,
+};
 
 export default userService;

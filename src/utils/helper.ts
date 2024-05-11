@@ -1,7 +1,7 @@
-import { options } from "@/app/api/auth/[...nextauth]/options";
-import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
 import { v4 as uuid4 } from "uuid";
+import { options } from "@/app/api/auth/[...nextauth]/options";
 
 export const generateIdentifier = async (prefix = "") => {
 	const uuid = uuid4();
@@ -27,19 +27,18 @@ export const ResponseObject = async (
 	success: boolean,
 	data: object | null | string = null,
 	statusCode?: number
-) => {
-	return NextResponse.json(
+) =>
+	NextResponse.json(
 		{ success, [success ? "data" : "error"]: parseErrorMessage(data) },
 		{ status: statusCode || (!success ? 400 : 200) }
 	);
-};
 
 export const generatePassword = async () => {
-	var length = 8,
-		charset =
-			"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
-		retVal = "";
-	for (var i = 0, n = charset.length; i < length; ++i) {
+	const length = 8;
+	const charset =
+		"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+	let retVal = "";
+	for (let i = 0, n = charset.length; i < length; ++i) {
 		retVal += charset.charAt(Math.floor(Math.random() * n));
 	}
 	return retVal;
