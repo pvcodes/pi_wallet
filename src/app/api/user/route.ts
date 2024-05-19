@@ -27,7 +27,6 @@ export async function POST(req: NextRequest) {
 
 		const payload: User = await req?.json();
 		await userSignupSchema.parseAsync(payload);
-		console.log(payload);
 		const user = userService.createUser(payload);
 		return ResponseObject(true, {
 			message: "user created successfully",
@@ -60,7 +59,6 @@ export async function PUT(req: NextRequest) {
 export async function DELETE(req: NextRequest, next: NextResponse) {
 	try {
 		const session = (await handleSession(req)) as Session;
-		console.log(21, session.user);
 		const user = await userService.deleteUser(session.user.id);
 		return ResponseObject(true, {
 			message: "user deleted successfully",

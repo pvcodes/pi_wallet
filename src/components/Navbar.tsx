@@ -37,14 +37,14 @@ export default function Navbar() {
             </svg>
           </div>
           <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
-            <li>
+            {/* <li>
               <Link href="">Homepage</Link>
-            </li>
+            </li> */}
             <li>
               <Link href="">About Us</Link>
             </li>
             <li>
-              <Link href="">Contribute</Link>
+              <Link href="https://github.com/pvcodes/pi_wallet" target='_blank'>Contribute</Link>
             </li>
           </ul>
         </div>

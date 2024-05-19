@@ -30,7 +30,6 @@ export const options: NextAuthOptions = {
 				},
 			},
 			async authorize(credentials) {
-				console.log(123, { credentials });
 				try {
 					const user = await dbclient.user.findUnique({
 						where: { username: credentials?.username },
@@ -40,7 +39,7 @@ export const options: NextAuthOptions = {
 						return { ...user, id: user.id.toString() };
 					}
 				} catch (error) {
-					console.log(1, error);
+					console.log(error);
 				}
 				return null;
 			},
@@ -74,7 +73,7 @@ export const options: NextAuthOptions = {
 				}
 				return true;
 			} catch (error) {
-				console.log(1, error);
+				console.log(error);
 				return false;
 			}
 		},
@@ -93,16 +92,14 @@ export const options: NextAuthOptions = {
 					return token;
 				}
 			} catch (error) {
-				console.log(2, error);
+				console.log(error);
 				return null;
 			}
-			// console.log(23, "jwt", token);
 		},
 		session: ({ session, token, user }: any) => {
 			if (session.user) {
 				session.user.id = token.id;
 			}
-			// // console.log(23, "session", token);
 			return session;
 		},
 	},

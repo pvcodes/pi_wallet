@@ -3,16 +3,17 @@ import type { Session } from "next-auth";
 
 import credService from "@/db/services/creds";
 import { handleSession, ResponseObject } from "@/utils/helper";
-import { UpdateCredSchema } from "@/utils/validations/creds";
+import { CreateCredSchema, UpdateCredSchema } from "@/utils/validations/creds";
+import type { ZodError } from "zod";
 
 export async function GET(req: NextRequest) {
 	try {
 		const session = (await handleSession(req)) as Session;
 
-		const cred = await credService.getCreds({
+		const creds = await credService.getCreds({
 			user_id: session.user.id,
 		});
-		return ResponseObject(true, cred, 200);
+		return ResponseObject(true, creds, 200);
 	} catch (error) {
 		console.log(error);
 		return ResponseObject(false, error as Error);
@@ -23,19 +24,31 @@ export async function POST(req: NextRequest) {
 	try {
 		const session = (await handleSession(req)) as Session;
 		if (!session?.user?.id) {
-			return ResponseObject(false, "unauthorized access");
+			const e = new Error("unauthorized access");
+			e.name = "AuthError";
+			throw e;
 		}
 
-		const { key, value } = await req?.json();
+		const payload = (await req?.json()) || {};
+		const { key, value } = await CreateCredSchema.parseAsync(payload);
 		const cred = await credService.createCred({
 			key,
 			value,
 			user_id: session?.user?.id,
 		});
-		return ResponseObject(true, cred);
+		return ResponseObject(true, cred, 201);
 	} catch (error) {
-		console.log(error);
-		return ResponseObject(false, error as Error);
+		let errorMsg;
+		switch ((error as Error).name) {
+			case "AuthError":
+				errorMsg = "unauthorized access";
+				break;
+			case "ZodError":
+				errorMsg = (error as ZodError)?.issues[0]?.message;
+			default:
+				errorMsg = (error as Error)?.message || "Something went wrong";
+		}
+		return ResponseObject(false, errorMsg);
 	}
 }
 
